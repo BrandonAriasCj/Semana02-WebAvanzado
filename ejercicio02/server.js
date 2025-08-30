@@ -37,8 +37,8 @@ const server = http.createServer((req, res) => {
   } else if (req.url === "/about") {
     renderTemplate(res, "about.hbs", {
       title: "Acerca del curso",
-      course: "Programación Web con Node.js",
-      teacher: "Prof. Juan Pérez",
+      course: "Programación Web Avanzada",
+      teacher: "Prof. Edwin William",
       date: new Date().toLocaleDateString("es-PE"),
     });
     } else if (req.url === "/students") {
