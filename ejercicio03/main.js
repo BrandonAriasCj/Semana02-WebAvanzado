@@ -31,9 +31,15 @@ const server = http.createServer((req, res) => {
     let body = "";
     req.on("data", chunk => (body += chunk));
     req.on("end", () => {
-      const newStudent = repo.create(JSON.parse(body));
-      res.statusCode = 201;
-      res.end(JSON.stringify(newStudent));
+      try {
+        const studentData = JSON.parse(body);
+        const newStudent = repo.create(studentData);
+        res.statusCode = 201;
+        res.end(JSON.stringify(newStudent));
+      } catch (error) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ error: error.message }));
+      }
     });
   }
 
@@ -65,6 +71,40 @@ const server = http.createServer((req, res) => {
       res.statusCode = 404;
       res.end(JSON.stringify({ error: "Estudiante no encontrado" }));
     }
+  }
+
+  // NUEVA RUTA: POST /listByStatus
+  else if (url === "/listByStatus" && method === "POST") {
+    let body = "";
+    req.on("data", chunk => (body += chunk));
+    req.on("end", () => {
+      try {
+        const { status } = JSON.parse(body);
+        const filteredStudents = repo.listByStatus(status);
+        res.statusCode = 200;
+        res.end(JSON.stringify(filteredStudents));
+      } catch (error) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ error: "Invalid request body" }));
+      }
+    });
+  }
+
+  // NUEVA RUTA: POST /listByGrade
+  else if (url === "/listByGrade" && method === "POST") {
+    let body = "";
+    req.on("data", chunk => (body += chunk));
+    req.on("end", () => {
+      try {
+        const { minGrade, maxGrade } = JSON.parse(body);
+        const filteredStudents = repo.listByGrade(minGrade, maxGrade);
+        res.statusCode = 200;
+        res.end(JSON.stringify(filteredStudents));
+      } catch (error) {
+        res.statusCode = 400;
+        res.end(JSON.stringify({ error: "Invalid request body" }));
+      }
+    });
   }
 
   // Ruta no encontrada
